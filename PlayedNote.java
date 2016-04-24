@@ -2,6 +2,7 @@ public class PlayedNote extends Note implements Comparable<PlayedNote> {
     
     public int duration;
     public int location;
+    // If silent is true, no note is actually played. 
     public boolean silent;
 
     public PlayedNote(String note, int duration, int location) {
@@ -25,6 +26,7 @@ public class PlayedNote extends Note implements Comparable<PlayedNote> {
 	silent = false;
     }
 
+    // Constructor for a 'silent' note.
     public PlayedNote(int duration) {
 	super(-1, null);
 	this.duration = duration;

@@ -1,4 +1,5 @@
 public class Chord {
+    // The int array associated with each chord type represents the intervals between chord tones.
     public enum ChordType { 
 	MAJOR(new int[] {4, 3, 4}),
 	MINOR(new int[] {3, 4, 3}),
@@ -15,6 +16,7 @@ public class Chord {
     
     public Note root;
     public ChordType type;
+    public boolean altered;
     public int duration;
     
     public Note[] chordTones;
@@ -23,6 +25,7 @@ public class Chord {
 	this.root = root;
 	this.type = type;
 	this.duration = duration;
+	this.altered = false;
 
 	// Construct the chord tones based on the root note and the type of chord.
 	chordTones = new Note[4];
@@ -41,16 +44,11 @@ public class Chord {
 	String str = root.toString();
 	if (type == ChordType.MAJOR) str += "maj7: ";
 	if (type == ChordType.MINOR) str += "-7: ";
-	if (type == ChordType.DOMINANT) str += "7: ";
+	if (type == ChordType.DOMINANT && !altered) str += "7: ";
+	if (type == ChordType.DOMINANT && altered) str += "alt7: ";
 	if (type == ChordType.DIMINISHED) str += "o7: ";
 	if (type == ChordType.HALF_DIMINISHED) str += "-7b5: ";
 	str += duration;
-
-	/*String str = "{ ";
-	for (int i = 0; i < chordTones.length; i++) {
-	    str += chordTones[i] + " ";
-	}
-	str += "}";*/
 	return str;
     }
 }

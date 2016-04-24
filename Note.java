@@ -1,6 +1,5 @@
 public class Note {
     public enum Augmentation { SHARP, FLAT, NATURAL }
-
     // Start at C and go up by half steps.
     // C=0, D=2, E=4, F=5, G=7, A=9, B=11
     private final static int[] notes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
@@ -9,6 +8,7 @@ public class Note {
     public int note;
     public Augmentation augmentation;
 
+    // Constructs a note from its string representation. For example, 'C#' will construct the note C sharp.
     public Note(String note) {
 	this.note = noteToInt(note);
 	if (note.length() == 2) {
@@ -29,6 +29,7 @@ public class Note {
 	augmentation = aug;
     }
 
+    // Returns the note obtained by adding 'step' half-steps to the given note.
     public Note plus(int step) {
 	if (note + step < 0) {
 	    return new Note(note + step + 12, augmentation);
@@ -36,6 +37,10 @@ public class Note {
 	return new Note((note + step) % 12, augmentation);
     }
     
+    // Returns the difference in the tones between the two given notes.
+    // 'up' indicates we want the interval starting at the first note, going up to the second note.
+    // If 'up' is true, we take the second note's tone minus the first note's tone.
+    // Otherwise, we take the first note's tone minus the second note's tone.
     public int toneDifference(Note other, boolean up) {
 	int diff;
 	if (up) {
@@ -47,26 +52,16 @@ public class Note {
 	return (diff < 0) ? diff + 12 : diff;
     }
 
+    // Similar to toneDifference(), but returns an Interval object instead of an int.
     public Interval getInterval(Note other) {
 	return new Interval(this, other);
     }
 
+    // Converts a Note to a PlayedNote by setting the given position and duration.
     public PlayedNote toPlayedNote(int position, int duration) {
 	return new PlayedNote(this, duration, position);
     }
 
-    public static void main(String[] args) {
-	Note B = new Note("B");
-	Note C = new Note("C");
-	System.out.println(B + " - " + C + " (up) = " + B.toneDifference(C, true));
-	System.out.println(B + " - " + C + " (down) = " + B.toneDifference(C, false));
-	System.out.println(C + " - " + B + " (up) = " + C.toneDifference(B, true));
-	System.out.println(C + " - " + B + " (down) = " + C.toneDifference(B, false));
-	System.out.println("C == C? : " + C.equals(new Note("C")));
-	System.out.println("D# == Eb? : " + (new Note("D#")).equals(new Note("Eb")));
-    }
-
-    @Override
     public String toString() {
 	return intToLetter(note, augmentation);
     }
@@ -83,6 +78,7 @@ public class Note {
 	return 73 * note;
     }	    
 
+    // Converts a note from the internal representation to a string representation.
     private String intToLetter(int note, Augmentation aug) {
 	// Name of black keys is determined by augmentation
 	if (note < 5) {
@@ -113,6 +109,8 @@ public class Note {
 	}
     }
     
+    // Converts the string representation of a note to its internal representation.
+    // Observe that enharmonic notes get mapped to the same int.
     private int noteToInt(String note) {
 	switch (note) {
 	case "B#":

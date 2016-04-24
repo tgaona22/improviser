@@ -6,9 +6,10 @@ public class Scale {
     public final static int[] Mixolydian = { 2, 2, 1, 2, 2, 1 };
     public final static int[] Diminished1 = { 2, 1, 2, 1, 2, 1 };
     public final static int[] Diminished2 = { 1, 2, 1, 2, 1, 2 };
+    public final static int[] AlteredDominant = { 1, 2, 1, 2, 2, 2 };
 
-    public Note[] notes;
-    public int[] pattern;
+    private Note[] notes;
+    private int[] pattern;
     
     public Scale(Note start, int[] stepPattern) {
 	notes = new Note[stepPattern.length + 1];
@@ -28,6 +29,7 @@ public class Scale {
 	this(new Note(start.note, aug), stepPattern);
     }
 
+    // Returns a scale that can be associated with the given chord.
     public static Scale getScale(Chord chord) {
 	if (chord.type == Chord.ChordType.MAJOR) {
 	    return new Scale(chord.root, Scale.Major);
@@ -42,6 +44,9 @@ public class Scale {
 	    }
 	}
 	if (chord.type == Chord.ChordType.DOMINANT) {
+	    if (chord.altered) {
+		return new Scale(chord.root, Scale.AlteredDominant);
+	    }
 	    double probability = Math.random();
 	    if (probability >= .85) {
 		return new Scale(chord.root, Scale.Diminished2);
@@ -59,14 +64,17 @@ public class Scale {
 	throw new RuntimeException("Attempt to determine scale for unknown chord type " + chord.type);
     }
 
+    // Returns the note in the scale at the given index, or null if the index is out of range.
     public Note get(int index) {
 	return (index >= 0 && index < notes.length) ? notes[index] : null;
     }	
 
+    // Returns the number of notes in the scale.
     public int length() {
 	return notes.length;
     }
 
+    // Returns true iff the given note is considered a dissonant tone of the scale.
     public boolean isDissonant(PlayedNote note) {
 	if (this.pattern == Scale.Major || this.pattern == Scale.Mixolydian) {
 	    return indexOfNote(note) == 3;
@@ -74,49 +82,7 @@ public class Scale {
 	return false;
     }
 
-    public PlayedNote getNoteCloseTo(PlayedNote base, int direction, int duration) {
-	// Find location of note in the scale.
-	// POSSIBLE BUG: This won't work if base isn't in the scale.
-	int index = indexOfNote(base);
-	// Go up or down according to the step pattern.
-	double probability = Math.random();
-	int steps;
-	// If base is a dissonant tone of the scale (4th on a major or mixolydian scale),
-	// then we need to resolve up or down by a single step.
-	if (isDissonant(base)) {
-	    steps = 1;
-	}
-	else if (probability > .9) {
-	    steps = 4;
-	}
-	else if (probability > .7) {
-	    steps = 3;
-	}
-	else if (probability > .55) {
-	    steps = 2;
-	}
-	else if (probability > .05) {
-	    steps = 1;
-	}
-	else {
-	    steps = 0;
-	}
-
-	int noteIndex = (index + (direction * steps)) % notes.length;
-	if (noteIndex < 0) {
-	    noteIndex += notes.length;
-	}
-	// Determine the position of the new note.
-	int position;
-	if (direction == 1) {
-	    position = notes[noteIndex].toneDifference(base, false) + base.location;
-	}
-	else {
-	    position = base.location - notes[noteIndex].toneDifference(base, true);
-	}
-	return new PlayedNote(notes[noteIndex], duration, position);
-    }	    
-
+    // Returns the position of the note in the scale, or -1 if the note is not in the scale.
     public int indexOfNote(Note note) {
 	for (int i = 0; i < notes.length; i++) {
 	    if (notes[i].equals(note)) {
@@ -124,8 +90,7 @@ public class Scale {
 	    }
 	}
 	return -1;
-    }
-    
+    }    
     
     public String toString() {
 	String str = "";
@@ -133,16 +98,5 @@ public class Scale {
 	    str += notes[i] + " ";
 	}
 	return str;
-    }
-
-    public static void main(String[] args) {
-	Scale DMajor2 = new Scale(new Note("D"), Scale.Major, Note.Augmentation.SHARP);
-	System.out.println(DMajor2);
-
-	Scale CMinor = new Scale("C", Scale.JazzMelodic);
-	System.out.println(CMinor);
-
-	Scale DHalfDim = new Scale("D", Scale.HalfDiminished);
-	System.out.println(DHalfDim);
     }
 }

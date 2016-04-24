@@ -10,6 +10,7 @@ public class Interval {
 	this.type = type;
     }
 
+    // Returns an array of intervals between the given chords.
     public static Interval[] getChordIntervals(List<Chord> chords) {
 	Interval[] intervals = new Interval[chords.size() - 1];
 	for (int i = 0; i < intervals.length; i++) {
@@ -22,6 +23,7 @@ public class Interval {
 	return type + " " + degree;
     }
 
+    // Constructs the interval starting at one and going up to two.
     public Interval(Note one, Note two) {
 	int diff = one.toneDifference(two, true);
 

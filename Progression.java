@@ -5,10 +5,17 @@ public class Progression {
     public enum ProgressionType { I_VI_II_V, II_V_I, II_V, ii_v_i, ii_v }
     public ProgressionType type;
     public Note root;
+    private List<Chord> chords;
 
-    public Progression(Note root, ProgressionType type) {
+    public Progression(Note root, ProgressionType type, List<Chord> chords) {
 	this.root = root;
 	this.type = type;
+	this.chords = chords;
+    }
+
+    // Returns the number of chords in the progression.
+    public int length() {
+	return chords.size();
     }
     
     // The following methods implement the rules necessary to classify chord progressions.
